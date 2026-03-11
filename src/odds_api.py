@@ -107,8 +107,7 @@ def get_upcoming_fixtures_odds(odds_key: str) -> list[dict]:
 
 def get_odds_for_event(odds_key: str, home_team: str, away_team: str,
                        event_id: str = None) -> dict | None:
-    print(f"[DEBUG] Buscando odds: {sport_key} | {home_team} vs {away_team} | event_id: {event_id}")
-    print(f"[DEBUG] Key configurada: {'SI' if os.environ.get('ODDS_API_KEY') else 'NO'}")
+
                            
     """
     Obtiene cuotas para un partido específico.
