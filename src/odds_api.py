@@ -75,7 +75,7 @@ def get_upcoming_fixtures_odds(odds_key: str) -> list[dict]:
     try:
         data = _get(
             f"sports/{odds_key}/events",
-            {"regions": "eu"},
+            {"regions": "eu,uk,us,au"},
             ttl=CACHE_TTL_FIXTURES,
         )
     except Exception as e:
@@ -116,7 +116,7 @@ def get_odds_for_event(odds_key: str, home_team: str, away_team: str,
             data = _get(
                 f"sports/{odds_key}/events/{event_id}/odds",
                 {
-                    "regions":    "eu,uk",
+                    "regions":    "eu,uk,us,au",
                     "markets":    "h2h,totals,btts",
                     "oddsFormat": "decimal",
                     "bookmakers": ",".join(PREFERRED_BOOKS),
