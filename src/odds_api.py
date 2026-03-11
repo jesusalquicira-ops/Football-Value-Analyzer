@@ -41,7 +41,7 @@ def _get(endpoint: str, params: dict, ttl: int = CACHE_TTL_ODDS):
     params["apiKey"] = api_key
     resp = requests.get(f"{BASE_URL}/{endpoint}", params=params, timeout=10)
     remaining = resp.headers.get("x-requests-remaining", "?")
-    print(f"[OddsAPI] Llamadas restantes: {remaining}")
+   # print(f"[OddsAPI] Llamadas restantes: {remaining}")
     resp.raise_for_status()
     data = resp.json()
     _write_cache(cache_key, data)
