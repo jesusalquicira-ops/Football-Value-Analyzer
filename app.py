@@ -33,6 +33,30 @@ from src.xg import get_team_xg
 from src.model import compute_lambdas, build_score_matrix, compute_market_probs, analyze_value, generate_summary
 from src.alerts import load_alerts, save_alerts, merge_alerts, run_full_scan, should_rescan, get_unseen_count, mark_seen
 
+# ── Funciones cacheadas en memoria de Streamlit ───────────────
+# TTL = 30 min para cuotas, 60 min para fixtures, 12h para stats
+# Esto evita llamadas repetidas a la API cuando el usuario recarga
+
+@st.cache_data(ttl=3600)
+def cached_get_fixtures(odds_key: str):
+    return get_upcoming_fixtures_odds(odds_key)
+
+@st.cache_data(ttl=1800)  # 30 min
+def cached_get_odds(odds_key: str, home: str, away: str, event_id: str):
+    return get_odds_for_event(odds_key, home, away, event_id=event_id or None)
+
+@st.cache_data(ttl=43200)  # 12 horas
+def cached_get_stats(fd_code: str, team_name: str):
+    return get_team_stats_from_standings(fd_code, team_name)
+
+@st.cache_data(ttl=43200)  # 12 horas
+def cached_get_league_avg(fd_code: str):
+    return get_league_avg_goals(fd_code)
+
+@st.cache_data(ttl=43200)  # 12 horas
+def cached_get_h2h(home: str, away: str, fd_code: str):
+    return get_h2h(home, away, fd_code)
+
 st.set_page_config(page_title="Football Value Analyzer", page_icon="⚽", layout="wide")
 
 st.markdown("""<style>
@@ -89,7 +113,7 @@ with st.sidebar:
 
     with st.spinner("Cargando partidos..."):
         try:
-            fixtures = get_upcoming_fixtures_odds(cfg["odds_key"])
+            fixtures = cached_get_fixtures(cfg["odds_key"])
         except Exception as e:
             st.error(f"Error: {e}")
             fixtures = []
@@ -188,14 +212,14 @@ with page[0]:
         h2h_data = None
 
         if cfg["fd_code"]:
-            try: home_stats = get_team_stats_from_standings(cfg["fd_code"], fixture["home_team"])
+            try: home_stats = cached_get_stats(cfg["fd_code"], fixture["home_team"])
             except Exception as e: errors.append(f"Stats {fixture['home_team']}: {e}")
-            try: away_stats = get_team_stats_from_standings(cfg["fd_code"], fixture["away_team"])
+            try: away_stats = cached_get_stats(cfg["fd_code"], fixture["away_team"])
             except Exception as e: errors.append(f"Stats {fixture['away_team']}: {e}")
-            try: league_avg = get_league_avg_goals(cfg["fd_code"])
+            try: league_avg = cached_get_league_avg(cfg["fd_code"])
             except: pass
             if show_h2h:
-                try: h2h_data = get_h2h(fixture["home_team"], fixture["away_team"], cfg["fd_code"])
+                try: h2h_data = cached_get_h2h(fixture["home_team"], fixture["away_team"], cfg["fd_code"])
                 except: pass
 
         if use_xg:
@@ -205,8 +229,8 @@ with page[0]:
             except: pass
 
         try:
-            casino_odds = get_odds_for_event(cfg["odds_key"], fixture["home_team"],
-                                             fixture["away_team"], event_id=fixture.get("event_id"))
+            casino_odds = cached_get_odds(cfg["odds_key"], fixture["home_team"],
+                                             fixture["away_team"], fixture.get("event_id", ""))
         except Exception as e:
             errors.append(f"Cuotas: {e}")
             casino_odds = None
@@ -360,5 +384,8 @@ with page[0]:
                     st.info("Estadísticas no disponibles.")
 
         st.caption("📊 Forma ponderada: los partidos recientes tienen más peso (decay exponencial)")
+        if use_xg:
+            st.caption("⚡ xG de understat.com — disponible para Premier, La Liga, Bundesliga, Serie A, Ligue 1")
+
         if use_xg:
             st.caption("⚡ xG de understat.com — disponible para Premier, La Liga, Bundesliga, Serie A, Ligue 1")
