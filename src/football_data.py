@@ -59,7 +59,10 @@ TEAM_TO_DOMESTIC = {
     "Marseille": "FL1", "Lyon": "FL1", "Monaco": "FL1", "Lille": "FL1", "Brest": "FL1",
     "Ajax": "DED", "PSV Eindhoven": "DED", "Feyenoord": "DED", "AZ": "DED",
     "Sporting CP": "PPL", "Sporting Lisbon": "PPL", "Benfica": "PPL",
-    "Porto": "PPL", "Braga": "PPL",
+    "Porto": "PPL", "Braga": "PPL","Real Sociedad": "PD", "Sevilla": "PD", "Valencia": "PD",
+    "Real Betis": "PD", "Girona": "PD", "Osasuna": "PD",
+    "Rayo Vallecano": "PD", "Getafe": "PD", "Celta Vigo": "PD",
+    "Espanyol": "PD", "Leganes": "PD", "Mallorca": "PD",
 }
 
 HAS_STANDINGS = {"PL", "PD", "BL1", "SA", "FL1", "DED", "PPL", "ELC", "BSA"}
