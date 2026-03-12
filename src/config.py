@@ -61,6 +61,6 @@ PREFERRED_BOOKS = [
 ]
 
 # Cache TTLs (segundos)
-CACHE_TTL_FIXTURES = 1800       # 30 min
-CACHE_TTL_STATS    = 3600 * 6   # 6 horas
-CACHE_TTL_ODDS     = 60 * 10    # 10 min
+CACHE_TTL_FIXTURES = 3600       # 60 min
+CACHE_TTL_STATS    = 3600 * 12  # 12 horas
+CACHE_TTL_ODDS     = 60 * 30    # 30 min
